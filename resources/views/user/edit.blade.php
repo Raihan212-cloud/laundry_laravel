@@ -17,11 +17,11 @@
                         <input type="email" class="form-control" name="email" value="{{ $edit->email }}" required>
 
                         <label for="" class="form-label">Password</label>
-                        <label name="password" class="form-control" type="password" value="{{ $edit->password }}" required>
+                        <input name="password" class="form-control" type="password" value="" required>
 
-                        <button type="submit" class="btn btn-primary mt-2">Simpan perubahan</button>
-                        <a href="{{ url()->previous() }}" class="btn btn-secondary mt-2">Kembali</a>
-                    </form>
+                            <button type="submit" class="btn btn-primary mt-2">Simpan perubahan</button>
+                            <a href="{{ url()->previous() }}" class="btn btn-secondary mt-2">Kembali</a>
+                        </form>
                 </div>
             </di>
         </div>

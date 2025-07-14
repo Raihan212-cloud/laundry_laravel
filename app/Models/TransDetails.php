@@ -13,4 +13,14 @@ class TransDetails extends Model
         'subtotal',
         'note'
     ];
+
+    public function transOrder()
+    {
+        return $this->belongsTo(TransOrders::class, 'id_trans', 'id');
+    }
+
+    public function service()
+    {
+        return $this->belongsTo(TypeOfServices::class, 'id_service', 'id');
+    }
 }
