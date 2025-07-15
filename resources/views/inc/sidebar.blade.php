@@ -1,12 +1,6 @@
  <aside id="sidebar" class="sidebar">
 
      <ul class="sidebar-nav" id="sidebar-nav">
-
-         <li class="nav-item">
-             <a class="nav-link collapsed" href="index.html">
-                 <i class="bi bi-grid"></i>
-                 <span>Dashboard</span>
-             </a>
          </li><!-- End Dashboard Nav -->
 
          <li class="nav-item">
@@ -113,6 +107,11 @@
                          <i class="bi bi-circle"></i><span>Trans Order</span>
                      </a>
                  </li>
+                 {{-- <li>
+                     <a href="{{route('pembayaran.index')}}">
+                         <i class="bi bi-circle"></i><span>Pembayaran</span>
+                     </a>
+                 </li> --}}
              </ul>
          </li><!-- End Forms Nav -->
 

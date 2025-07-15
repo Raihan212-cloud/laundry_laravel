@@ -1,3 +1,5 @@
+{{-- @extends('app')
+@section('content') --}}
 <!DOCTYPE html>
 <html lang="id">
 
@@ -5,6 +7,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Sistem Informasi Laundry - POS</title>
+    <meta name="csrf-token" content="{{ csrf_token() }}" />
     <style>
         * {
             margin: 0;
@@ -430,7 +433,7 @@
 
                 <form id="transactionForm">
                     <div class="form-group">
-                        <label for="customer Name">Nama Pelanggan</label>
+                        <label for="customerName">Nama Pelanggan</label>
                         <select name="customer_id" id="customer_id" class="form-control">
                             <option value="">Pilih Customer</option>
                             @foreach ($customers as $customer)
@@ -542,14 +545,14 @@
                         <p>📅 13 Juli 2025, 13:15</p>
                         <span class="status-badge status-ready">Siap</span>
                     </div>
-                    <div class="transaction-item">
+                    {{-- <div class="transaction-item">
                         <h4>TRX-003 - Jane Smith</h4>
                         <p>📞 0813-7654-3210</p>
                         <p>🛍️ Cuci Kering - 3kg</p>
                         <p>💰 Rp 15.000</p>
                         <p>📅 13 Juli 2025, 13:15</p>
                         <span class="status-badge status-ready">Siap</span>
-                    </div>
+                    </div> --}}
                 </div>
 
                 <button class="btn btn-warning" onclick="showAllTransactions()" style="width: 100%; margin-top: 15px;">
@@ -563,8 +566,8 @@
             <button class="btn btn-primary" onclick="showReports()" style="margin: 0 10px;">
                 📈 Laporan Penjualan
             </button>
-            <button class="btn btn-warning" onclick="manageServices()" style="margin: 0 10px;">
-                ⚙️ Kelola Layanan
+            <button class="btn btn-warning" style="margin: 0 10px;" href="">
+                💰 Pembayaran
             </button>
             <button class="btn btn-danger" onclick="clearCart()" style="margin: 0 10px;">
                 🗑️ Bersihkan Keranjang
@@ -579,12 +582,6 @@
             <div id="modalContent"></div>
         </div>
     </div>
-
-
-
-
-
-
 
 
     <script>
@@ -694,9 +691,12 @@
         }
 
         function processTransaction() {
-            const customerName = document.getElementById('customerName').value;
-            const customerPhone = document.getElementById('customerPhone').value;
-            const customerAddress = document.getElementById('customerAddress').value;
+            const selectCustomer = document.querySelector('#customer_id');
+            const optionCustomer = selectCustomer.options[selectCustomer.selectedIndex];
+            const addressCustomer = optionCustomer.dataset.address
+            const customerName = optionCustomer.textContent;
+            const customerPhone = optionCustomer.dataset.phone;
+            const customerAddress = optionCustomer.dataset.address;
 
             if (!customerName || !customerPhone || cart.length === 0) {
                 alert('Mohon lengkapi data pelanggan dan pastikan ada item di keranjang!');
@@ -718,7 +718,23 @@
                 status: 'pending'
             };
 
+            const token = document.querySelector('meta[name="csrf-token"]').getAttribute("content");
             transactions.push(transaction);
+            fetch("/trans", {
+                method:"POST",
+                headers:{
+                    "Content-Type":"application/json",
+                    "X-CSRF-TOKEN": token,
+                },
+                body: JSON.stringify(transaction),
+            })
+            .then((response) => response.json())
+            .then(function(result){
+                console.log("hasilnya", result);
+            })
+            .catch((error) => {
+                console.log("error", error);
+            });
             localStorage.setItem('laundryTransactions', JSON.stringify(transactions));
 
             transactionCounter++;
@@ -918,70 +934,70 @@
             document.getElementById('transactionModal').style.display = 'block';
         }
 
-        function manageServices() {
-            const servicesHtml = `
-                <h2>⚙️ Kelola Layanan</h2>
-                <p>Fitur ini memungkinkan Anda mengelola jenis layanan dan harga.</p>
+        // function manageServices() {
+        //     const servicesHtml = `
+        //         <h2>⚙️ Kelola Layanan</h2>
+        //         <p>Fitur ini memungkinkan Anda mengelola jenis layanan dan harga.</p>
 
-                <table class="cart-table">
-                    <thead>
-                        <tr>
-                            <th>Layanan</th>
-                            <th>Harga</th>
-                            <th>Satuan</th>
-                            <th>Status</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td>Cuci Kering</td>
-                            <td>Rp 5.000</td>
-                            <td>per kg</td>
-                            <td><span class="status-badge status-ready">Aktif</span></td>
-                        </tr>
-                        <tr>
-                            <td>Cuci Setrika</td>
-                            <td>Rp 7.000</td>
-                            <td>per kg</td>
-                            <td><span class="status-badge status-ready">Aktif</span></td>
-                        </tr>
-                        <tr>
-                            <td>Setrika Saja</td>
-                            <td>Rp 3.000</td>
-                            <td>per kg</td>
-                            <td><span class="status-badge status-ready">Aktif</span></td>
-                        </tr>
-                        <tr>
-                            <td>Dry Clean</td>
-                            <td>Rp 15.000</td>
-                            <td>per kg</td>
-                            <td><span class="status-badge status-ready">Aktif</span></td>
-                        </tr>
-                        <tr>
-                            <td>Cuci Sepatu</td>
-                            <td>Rp 25.000</td>
-                            <td>per pasang</td>
-                            <td><span class="status-badge status-ready">Aktif</span></td>
-                        </tr>
-                        <tr>
-                            <td>Cuci Karpet</td>
-                            <td>Rp 20.000</td>
-                            <td>per m²</td>
-                            <td><span class="status-badge status-ready">Aktif</span></td>
-                        </tr>
-                    </tbody>
-                </table>
+        //         <table class="cart-table">
+        //             <thead>
+        //                 <tr>
+        //                     <th>Layanan</th>
+        //                     <th>Harga</th>
+        //                     <th>Satuan</th>
+        //                     <th>Status</th>
+        //                 </tr>
+        //             </thead>
+        //             <tbody>
+        //                 <tr>
+        //                     <td>Cuci Kering</td>
+        //                     <td>Rp 5.000</td>
+        //                     <td>per kg</td>
+        //                     <td><span class="status-badge status-ready">Aktif</span></td>
+        //                 </tr>
+        //                 <tr>
+        //                     <td>Cuci Setrika</td>
+        //                     <td>Rp 7.000</td>
+        //                     <td>per kg</td>
+        //                     <td><span class="status-badge status-ready">Aktif</span></td>
+        //                 </tr>
+        //                 <tr>
+        //                     <td>Setrika Saja</td>
+        //                     <td>Rp 3.000</td>
+        //                     <td>per kg</td>
+        //                     <td><span class="status-badge status-ready">Aktif</span></td>
+        //                 </tr>
+        //                 <tr>
+        //                     <td>Dry Clean</td>
+        //                     <td>Rp 15.000</td>
+        //                     <td>per kg</td>
+        //                     <td><span class="status-badge status-ready">Aktif</span></td>
+        //                 </tr>
+        //                 <tr>
+        //                     <td>Cuci Sepatu</td>
+        //                     <td>Rp 25.000</td>
+        //                     <td>per pasang</td>
+        //                     <td><span class="status-badge status-ready">Aktif</span></td>
+        //                 </tr>
+        //                 <tr>
+        //                     <td>Cuci Karpet</td>
+        //                     <td>Rp 20.000</td>
+        //                     <td>per m²</td>
+        //                     <td><span class="status-badge status-ready">Aktif</span></td>
+        //                 </tr>
+        //             </tbody>
+        //         </table>
 
-                <div style="text-align: center; margin-top: 20px;">
-                    <button class="btn btn-primary" onclick="alert('Fitur akan segera tersedia!')">
-                        ➕ Tambah Layanan Baru
-                    </button>
-                </div>
-            `;
+        //         <div style="text-align: center; margin-top: 20px;">
+        //             <button class="btn btn-primary" onclick="alert('Fitur akan segera tersedia!')">
+        //                 ➕ Tambah Layanan Baru
+        //             </button>
+        //         </div>
+        //     `;
 
-            document.getElementById('modalContent').innerHTML = servicesHtml;
-            document.getElementById('transactionModal').style.display = 'block';
-        }
+        //     document.getElementById('modalContent').innerHTML = servicesHtml;
+        //     document.getElementById('transactionModal').style.display = 'block';
+        // }
 
         function updateTransactionStatus(transactionId) {
             const transaction = transactions.find(t => t.id === transactionId);
@@ -1051,6 +1067,7 @@
 
         function closeModal() {
             document.getElementById('transactionModal').style.display = 'none';
+            window.location.href('trans/index')
         }
 
         function formatNumber(input) {
@@ -1093,7 +1110,11 @@
 
         // Update addToCart function to handle decimal with comma
         function addToCart() {
-            const serviceType = document.getElementById('serviceType').value;
+            const selectService = document.querySelector('#serviceType');
+            const optionService = selectService.options[selectService.selectedIndex];
+            const nameService = optionService.textContent;
+            const priceService = parseInt(optionService.dataset.price);
+            // const serviceType = document.getElementById('serviceType').value;
             const weightValue = document.getElementById('serviceWeight').value;
             const weight = parseDecimal(weightValue);
             const notes = document.getElementById('notes').value;
@@ -1103,23 +1124,24 @@
                 return;
             }
 
+
             const prices = {
-                'Cuci Kering': 5000,
-                'Cuci Setrika': 7000,
+                'hanya cuci': 3000,
+                'hanya gosok': 7000,
                 'Setrika Saja': 3000,
                 'Dry Clean': 15000,
                 'Cuci Sepatu': 25000,
                 'Cuci Karpet': 20000
             };
 
-            const price = prices[serviceType];
-            const subtotal = price * weight;
+            // const price = prices[serviceType];
+            const subtotal = priceService * weight;
 
             const item = {
                 id: Date.now(),
-                service: serviceType,
+                service: nameService,
                 weight: weight,
-                price: price,
+                price: priceService,
                 subtotal: subtotal,
                 notes: notes
             };
@@ -1214,23 +1236,23 @@
                     date: new Date(Date.now() - 3600000).toISOString(),
                     status: 'ready'
                 }
-                {
-                    id: 'TRX-003',
-                    customer: {
-                        name: 'Jaden',
-                        phone: '0813-7654-3210',
-                        address: 'Jl. Prokramasi'
-                    },
-                    items: [{
-                        service: 'Cuci Kering',
-                        weight: 3,
-                        price: 5000,
-                        subtotal: 15000
-                    }],
-                    total: 15000,
-                    date: new Date(Date.now() - 3600000).toISOString(),
-                    status: 'ready'
-                }
+                // {
+                //     id: 'TRX-003',
+                //     customer: {
+                //         name: 'Jaden',
+                //         phone: '0813-7654-3210',
+                //         address: 'Jl. Prokramasi'
+                //     },
+                //     items: [{
+                //         service: 'Cuci Kering',
+                //         weight: 3,
+                //         price: 5000,
+                //         subtotal: 15000
+                //     }],
+                //     total: 15000,
+                //     date: new Date(Date.now() - 3600000).toISOString(),
+                //     status: 'ready'
+                // }
             ];
 
             if (transactions.length === 0) {
@@ -1244,3 +1266,4 @@
         addSampleData();
     </script>
 </body>
+{{-- @endsection --}}

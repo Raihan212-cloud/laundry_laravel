@@ -21,6 +21,7 @@ Route::middleware(['auth'])->group(function () {
     Route::resource('customer', App\Http\Controllers\CustomerController::class);
     Route::resource('user', App\Http\Controllers\UserController::class);
     Route::resource('trans', App\Http\Controllers\TransOrderController::class);
+    Route::resource('pembayaran', App\Http\Controllers\TransOrderController::class);
     Route::get('print_struk/{id}', [App\Http\Controllers\TransOrderController::class, 'printStruk'])->name('print_struk');
     Route::post('trans/{id}/snap', [App\Http\Controllers\TransOrderController::class, 'snap'])->name('trans.snap');
     // Route::get('insert/service', [DashboardController::class, 'showInsService']);

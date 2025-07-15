@@ -29,7 +29,7 @@
                                     <a href="{{ route('print_struk', $data->id) }}"
                                         class="btn btn-primary btn-sm">Print</a>
                                     <a href="{{ route('trans.show', $data->id) }}"
-                                        class="btn btn-primary btn-sm">Edit</a>
+                                        class="btn btn-primary btn-sm">Pembayaran</a>
                                     <form action="{{ route('trans.destroy', $data->id) }}" method="post"
                                         style="display: inline">
                                         @csrf
